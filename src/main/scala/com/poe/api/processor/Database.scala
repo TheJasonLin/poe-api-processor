@@ -2,10 +2,10 @@ package com.poe.api.processor
 
 import com.mongodb.client.result.UpdateResult
 import com.poe.api.processor.entities.{Change, ChangeFactory}
-import com.poe.parser.item.{DBItem, Item}
+import com.poe.parser.item.{DBItem, Item, Mod}
 import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
 import org.bson.codecs.configuration.CodecRegistry
-import org.mongodb.scala.bson.{BsonValue, ObjectId}
+import org.mongodb.scala.bson.ObjectId
 import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 import org.mongodb.scala.bson.codecs.Macros._
 import org.mongodb.scala.model.Filters._
@@ -18,7 +18,7 @@ import scala.concurrent.Future
 
 object Database {
   // setup codec registries
-  val codecRegistry: CodecRegistry = fromRegistries(fromProviders(classOf[DBItem]), DEFAULT_CODEC_REGISTRY)
+  val codecRegistry: CodecRegistry = fromRegistries(fromProviders(classOf[DBItem]), fromRegistries(fromProviders(classOf[Mod])), DEFAULT_CODEC_REGISTRY)
   // To directly connect to the default server localhost on port 27017
   private val mongoClient: MongoClient = MongoClient()
   private val database: MongoDatabase = mongoClient.getDatabase("poe").withCodecRegistry(codecRegistry)

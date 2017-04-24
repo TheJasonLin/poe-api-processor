@@ -42,7 +42,6 @@ class DatabaseSpec extends AsyncFlatSpec with Matchers {
     })
   }
 
-
   private def createDivCard(name: String): DivinationCard = {
     val knownInfo: KnownInfo = new KnownInfo(name, Rarity.DIVINATION_CARD)
     new DivinationCard(knownInfo)

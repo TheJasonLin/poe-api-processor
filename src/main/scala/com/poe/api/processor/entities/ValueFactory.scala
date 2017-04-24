@@ -5,7 +5,7 @@ import com.poe.constants.ValueType
 import org.mongodb.scala.bson.{BsonArray, BsonValue}
 
 object ValueFactory extends DocumentFactory[Value] {
-  override def create(bsonValue: BsonValue): Value = {
+  override def create(bsonValue: BsonValue, parent: Option[BsonValue]): Value = {
     val array: BsonArray = bsonValue.asArray()
     if(array.size() != 2) {
       throw new IllegalArgumentException(s"Only array of size 2 allowed: ${array.size}")

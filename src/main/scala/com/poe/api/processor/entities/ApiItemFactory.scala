@@ -6,7 +6,7 @@ import org.mongodb.scala.bson.{BsonArray, BsonBoolean, BsonInt32, BsonString, Bs
 import scala.collection.JavaConverters._
 
 object ApiItemFactory extends DocumentFactory[ApiItem] {
-  override def create(bsonValue: BsonValue): ApiItem = {
+  override def create(bsonValue: BsonValue, parent: Option[BsonValue]): ApiItem = {
     val document: Document = bsonValue.asDocument()
     val verified: Boolean = document.get[BsonBoolean]("verified").get.getValue
     val w: Int = document.get[BsonInt32]("w").get.getValue
@@ -21,6 +21,7 @@ object ApiItemFactory extends DocumentFactory[ApiItem] {
     val identified: Boolean = document.get[BsonBoolean]("identified").get.getValue
     val corrupted: Boolean = document.get[BsonBoolean]("corrupted").get.getValue
     val lockedToCharacter: Boolean = document.get[BsonBoolean]("lockedToCharacter").get.getValue
+    val note: Option[String] = DocumentHelper.parseStringOption(document, "note")
     val properties: Option[Seq[Property]] = parseProperties(document)
     val additionalProperties: Option[Seq[Property]] = parseAdditionalProperties(document)
     //@todo: Requirements
@@ -30,13 +31,25 @@ object ApiItemFactory extends DocumentFactory[ApiItem] {
     val inventoryId: String = document.get[BsonString]("inventoryId").get.getValue
     val talismanTier: Option[Int] = parseTalismanTier(document)
     // not included: socketedItems
+    // Passed down attributes
+    var accountName: Option[String] = None
+    var lastCharacterName: Option[String] = None
+    var stashName: Option[String] = None
+
+    if(parent.isDefined) {
+      val parentDocument: Document = parent.get.asDocument()
+      accountName = DocumentHelper.parseStringOption(parentDocument, "accountName")
+      lastCharacterName = DocumentHelper.parseStringOption(parentDocument, "lastCharacterName")
+      stashName = DocumentHelper.parseStringOption(parentDocument, "stashName")
+    }
 
     ApiItem(
       verified, w, h, ilvl, icon, league,
       id, name, typeLine, identified, corrupted,
-      lockedToCharacter, properties, additionalProperties,
-      implicitMods, explicitMods, frameType, inventoryId,
-      talismanTier
+      lockedToCharacter, note, properties,
+      additionalProperties, implicitMods,
+      explicitMods, frameType, inventoryId,
+      talismanTier, accountName, lastCharacterName, stashName
     )
   }
 

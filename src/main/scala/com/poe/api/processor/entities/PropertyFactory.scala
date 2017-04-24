@@ -3,7 +3,7 @@ import org.mongodb.scala.Document
 import org.mongodb.scala.bson.{BsonInt32, BsonString, BsonValue}
 
 object PropertyFactory extends DocumentFactory[Property] {
-  override def create(bsonValue: BsonValue): Property = {
+  override def create(bsonValue: BsonValue, parent: Option[BsonValue]): Property = {
     val document: Document = bsonValue.asDocument()
     val name: String = document.get[BsonString]("name").get.getValue
     val values: Seq[Value] = parseValues(document)

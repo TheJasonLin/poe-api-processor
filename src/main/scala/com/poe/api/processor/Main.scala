@@ -54,6 +54,7 @@ object Main {
   private def createKnownInfo(apiItem: ApiItem): KnownInfo = {
     val rarity: Rarity = Rarity.values()(apiItem.frameType)
     val knownInfo: KnownInfo = new KnownInfo(apiItem.typeLine, rarity)
+    knownInfo.id = Option(apiItem.id)
     knownInfo.name = if (apiItem.name.length > 0) Option(apiItem.name) else None
     knownInfo.itemLevel = Option(apiItem.ilvl)
     knownInfo.identified = Option(apiItem.identified)
@@ -62,6 +63,10 @@ object Main {
     knownInfo.talismanTier = apiItem.talismanTier
     knownInfo.implicits = apiItem.implicitMods
     knownInfo.explicits = apiItem.explicitMods
+    //@todo:  update here!!!
+    knownInfo.accountName = apiItem.accountName
+    knownInfo.lastCharacterName = apiItem.lastCharacterName
+    knownInfo.stashName = apiItem.stashName
 
     knownInfo
   }
