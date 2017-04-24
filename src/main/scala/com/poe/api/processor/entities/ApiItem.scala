@@ -11,26 +11,22 @@ case class ApiItem(
                     icon: String,
                     league: String,
                     id: String,
-                    //@TODO: sockets
                     name: String,
                     typeLine: String,
                     identified: Boolean,
                     corrupted: Boolean,
                     lockedToCharacter: Boolean,
-                    note: Option[String],
-                    properties: Option[Seq[Property]],
-                    additionalProperties: Option[Seq[Property]],
-                    //@TODO: Requirements
-                    implicitMods: Option[Seq[String]],
-                    explicitMods: Option[Seq[String]],
                     frameType: Int,
                     inventoryId: String,
-                    talismanTier: Option[Int],
-                    // not included: socketedItems
-                    // Passed Down
-                    accountName: Option[String],
-                    lastCharacterName: Option[String],
-                    stashName: Option[String]
+                    note: Option[String] = None,
+                    properties: Option[Seq[Property]] = None,
+                    additionalProperties: Option[Seq[Property]] = None,
+                    implicitMods: Option[Seq[String]] = None,
+                    explicitMods: Option[Seq[String]] = None,
+                    talismanTier: Option[Int] = None,
+                    accountName: Option[String] = None,
+                    lastCharacterName: Option[String] = None,
+                    stashName: Option[String] = None
                   ) {
 
   def quality: Option[Int] = {

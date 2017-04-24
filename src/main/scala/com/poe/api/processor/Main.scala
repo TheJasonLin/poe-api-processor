@@ -1,6 +1,6 @@
 package com.poe.api.processor
 
-import com.poe.api.processor.entities.{ApiItem, Change, Stash}
+import com.poe.api.processor.entities.{ApiItem, Change, Property, Stash}
 import com.poe.constants.Rarity
 import com.poe.parser.item.Item
 import com.poe.parser.{ItemFactory, KnownInfo}
@@ -44,7 +44,7 @@ object Main {
     Future.successful(items)
   }
 
-  //@TODO: Handle Errors
+  //@todo: Handle Errors
   private def storeItems(items: Seq[Item]): Future[Boolean] = {
     Database.insertItems(items).map((_) => {
       true
@@ -59,7 +59,7 @@ object Main {
     knownInfo.itemLevel = Option(apiItem.ilvl)
     knownInfo.identified = Option(apiItem.identified)
     knownInfo.quality = apiItem.quality
-    knownInfo.mapTier = PropertyReader.readMapTier(apiItem)
+    knownInfo.mapTier = readMapTier(apiItem)
     knownInfo.talismanTier = apiItem.talismanTier
     knownInfo.implicits = apiItem.implicitMods
     knownInfo.explicits = apiItem.explicitMods
@@ -78,5 +78,25 @@ object Main {
       logger.error("Storage Failed!")
       throw new IllegalStateException("Failed to store to database!")
     }
+  }
+
+  private def readMapTier(apiItem: ApiItem): Option[Int] = {
+    if(apiItem.properties.isEmpty) return None
+
+    val mapTierProperty = apiItem.properties.get.find((property: Property) => {
+      property.name == "Map Tier"
+    })
+
+    if(mapTierProperty.isEmpty) return None
+
+    val mapTier: Int =
+      mapTierProperty
+        .get
+        .values
+        .head
+        .value
+        .toInt
+
+    Option(mapTier)
   }
 }

@@ -43,14 +43,7 @@ object ApiItemFactory extends DocumentFactory[ApiItem] {
       stashName = DocumentHelper.parseStringOption(parentDocument, "stashName")
     }
 
-    ApiItem(
-      verified, w, h, ilvl, icon, league,
-      id, name, typeLine, identified, corrupted,
-      lockedToCharacter, note, properties,
-      additionalProperties, implicitMods,
-      explicitMods, frameType, inventoryId,
-      talismanTier, accountName, lastCharacterName, stashName
-    )
+    ApiItem(verified, w, h, ilvl, icon, league, id, name, typeLine, identified, corrupted, lockedToCharacter, frameType, inventoryId, note, properties, additionalProperties, implicitMods, explicitMods, talismanTier, accountName, lastCharacterName, stashName)
   }
 
   private def parseProperties(document: Document): Option[Seq[Property]] = {
