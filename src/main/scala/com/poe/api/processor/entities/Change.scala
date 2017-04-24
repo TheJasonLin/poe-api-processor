@@ -2,11 +2,9 @@ package com.poe.api.processor.entities
 
 import org.mongodb.scala.bson.ObjectId
 
-class Change(
-            val id: ObjectId,
-            val nextChangeId: String,
-            val stashes: Seq[Stash]
-            ) {
 
-
-}
+case class Change(
+                   _id: ObjectId,
+                   nextChangeId: String,
+                   stashes: Seq[Stash]
+                 )

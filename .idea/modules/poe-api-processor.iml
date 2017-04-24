@@ -36,7 +36,7 @@
     <orderEntry type="library" scope="TEST" name="SBT: org.scalatest:scalatest_2.12:3.0.1:jar" level="project" />
     <orderEntry type="library" name="SBT: ch.qos.logback:logback-classic:1.1.7:jar" level="project" />
     <orderEntry type="library" name="SBT: ch.qos.logback:logback-core:1.1.7:jar" level="project" />
-    <orderEntry type="library" name="poe-parser" level="project" />
     <orderEntry type="library" name="poe-constants" level="project" />
+    <orderEntry type="library" name="poe-parser" level="project" />
   </component>
 </module>

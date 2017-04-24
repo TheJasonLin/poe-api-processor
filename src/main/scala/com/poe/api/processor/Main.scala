@@ -1,25 +1,26 @@
 package com.poe.api.processor
 
-import com.mongodb.client.result.UpdateResult
 import com.poe.api.processor.entities.{ApiItem, Change, Stash}
 import com.poe.constants.Rarity
-import com.poe.parser.{ItemFactory, KnownInfo}
 import com.poe.parser.item.Item
+import com.poe.parser.{ItemFactory, KnownInfo}
 import com.typesafe.scalalogging.Logger
-import org.mongodb.scala.Document
 import org.mongodb.scala.bson.ObjectId
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Main {
   val logger = Logger("Main")
+
   def main(args: Array[String]): Unit = {
     while(true) {
-      val fFor = for {
-        nextChange <- getNextChange
-        items <-  parseItems(nextChange)
-        done <- markChangeProcessed(nextChange.id, items)
+      val fFor: Future[Boolean] = for {
+        nextChange: Change <- getNextChange
+        items: Seq[Item] <-  parseItems(nextChange)
+        stored: Boolean <- storeItems(items)
+        done: Boolean <- markChangeProcessed(nextChange._id, stored)
       } yield done
 
       Await.result(fFor, Duration.Inf)
@@ -27,13 +28,11 @@ object Main {
   }
 
   private def getNextChange: Future[Change] = {
-    Database.nextChange.map((changeDocument: Document) => {
-      Converter.convertChange(changeDocument)
-    })
+    Database.nextChange
   }
 
-  private def parseItems(change: Change): Future[Set[Item]] = {
-    val items: Set[Item] = change.stashes
+  private def parseItems(change: Change): Future[Seq[Item]] = {
+    val items: Seq[Item] = change.stashes
       .flatMap((stash: Stash) => {
         stash.items
       })
@@ -41,9 +40,15 @@ object Main {
       .map((knownInfo: KnownInfo) => {
         ItemFactory.create(knownInfo)
       })
-      .toSet[Item]
 
     Future.successful(items)
+  }
+
+  //@TODO: Handle Errors
+  private def storeItems(items: Seq[Item]): Future[Boolean] = {
+    Database.insertItems(items).map((_) => {
+      true
+    })
   }
 
   private def createKnownInfo(apiItem: ApiItem): KnownInfo = {
@@ -53,13 +58,20 @@ object Main {
     knownInfo.itemLevel = Option(apiItem.ilvl)
     knownInfo.identified = Option(apiItem.identified)
     knownInfo.quality = apiItem.quality
-
-    //@TODO: Remaining Fields
+    knownInfo.mapTier = PropertyReader.readMapTier(apiItem)
+    knownInfo.talismanTier = apiItem.talismanTier
+    knownInfo.implicits = apiItem.implicitMods
+    knownInfo.explicits = apiItem.explicitMods
 
     knownInfo
   }
 
-  private def markChangeProcessed(changeId: ObjectId, items: Set[Item]): Future[UpdateResult] = {
-    Database.markChangeProcessed(changeId)
+  private def markChangeProcessed(changeId: ObjectId, stored: Boolean): Future[Boolean] = {
+    if(stored) {
+      Database.markChangeProcessed(changeId)
+    } else {
+      logger.error("Storage Failed!")
+      throw new IllegalStateException("Failed to store to database!")
+    }
   }
 }

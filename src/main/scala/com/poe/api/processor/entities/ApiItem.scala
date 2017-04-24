@@ -1,29 +1,32 @@
 package com.poe.api.processor.entities
-
 /**
-  * @TODO: Verify that all relevant parameters are included
+  * @todo Verify that all relevant parameters are included
   */
-class ApiItem(
-             val verified: Boolean,
-             val w: Int,
-             val h: Int,
-             val ilvl: Int,
-             val icon: String,
-             val league: String,
-             val id: String,
-             //@TODO: sockets
-             val name: String,
-             val typeLine: String,
-             val identified: Boolean,
-             val corrupted: Boolean,
-             val lockedToCharacter: Boolean,
-             val properties: Option[Set[Property]],
-             //@TODO: Requirements
-             val implicitMods: Set[String],
-             val explicitMods: Set[String],
-             val frameType: Int,
-             val inventoryId: String
-             // not included: socketedItems
-             ) {
-  def quality: Option[Int] = _
+
+case class ApiItem (
+  verified: Boolean,
+  w: Int,
+  h: Int,
+  ilvl: Int,
+  icon: String,
+  league: String,
+  id: String,
+  //@TODO: sockets
+  name: String,
+  typeLine: String,
+  identified: Boolean,
+  corrupted: Boolean,
+  lockedToCharacter: Boolean,
+  properties: Option[Seq[Property]],
+  additionalProperties: Option[Seq[Property]],
+  //@TODO: Requirements
+  implicitMods: Option[Seq[String]],
+  explicitMods: Option[Seq[String]],
+  frameType: Int,
+  inventoryId: String,
+  talismanTier: Option[Int]
+  // not included: socketedItems
+) {
+  //@todo: Implement
+  def quality: Option[Int] = None
 }
